@@ -1,4 +1,5 @@
 mod decode;
+mod encode;
 mod screenshot;
 
 use std::process;
@@ -8,7 +9,12 @@ fn print_help() {
     println!();
     println!("Commands:");
     println!("  <url_or_file_path>    Decode QR code from image file or URL");
+    println!("  encode <content>      Encode content into QR code");
     println!("  screenshot            Select and decode QR code from screen");
+    println!();
+    println!("Encode options:");
+    println!("  -o, --output <file>   Save QR code to file (PNG or SVG)");
+    println!("  -l, --level <level>   Error correction level: L, M, Q, H (default: M)");
     println!();
     println!("Screenshot options:");
     println!("  --list                List all available monitors");
@@ -27,6 +33,7 @@ fn main() {
     }
 
     match args[1].as_str() {
+        "encode" => encode::run(&args[2..]),
         "screenshot" => screenshot::run(&args[2..]),
         input => {
             let img = load_image(input).unwrap_or_else(|e| {

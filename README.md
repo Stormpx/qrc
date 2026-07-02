@@ -1,9 +1,10 @@
 # qrc
 
-A command-line tool for decoding QR codes from images, URLs, or screen captures.
+A command-line tool for encoding and decoding QR codes.
 
 ## Features
 
+- Encode content into QR codes (terminal or file output)
 - Decode QR codes from local image files
 - Decode QR codes from URLs (http/https)
 - Interactive screen capture with region selection
@@ -16,6 +17,22 @@ cargo install --path .
 ```
 
 ## Usage
+
+### Encode to QR code
+
+```bash
+# Print to terminal
+qrc encode "Hello World"
+
+# Save to PNG file
+qrc encode "https://example.com" -o qrcode.png
+
+# Save to SVG file
+qrc encode "https://example.com" -o qrcode.svg
+
+# Specify error correction level (L/M/Q/H)
+qrc encode "Hello World" -o qrcode.png -l H
+```
 
 ### Decode from image file
 
@@ -69,6 +86,7 @@ PNG, JPEG, GIF, BMP, WebP, and other common image formats supported by the `imag
 
 ## Dependencies
 
+- [qrcode](https://crates.io/crates/qrcode) - QR code encoding
 - [rqrr](https://crates.io/crates/rqrr) - QR code decoding
 - [xcap](https://crates.io/crates/xcap) - Screen capture
 - [eframe](https://crates.io/crates/eframe) - GUI framework for screen selection
