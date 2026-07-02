@@ -7,3 +7,5 @@ edition = "2024"
 reqwest = { version = "0.12", features = ["blocking"] }
 image = "0.25"
 rqrr = "0.8"
+xcap = "0.9"
+eframe = "0.34"

@@ -1,31 +1,47 @@
+mod decode;
+mod screenshot;
+
 use std::process;
+
+fn print_help() {
+    println!("Usage: qrc <command> [options]");
+    println!();
+    println!("Commands:");
+    println!("  <url_or_file_path>    Decode QR code from image file or URL");
+    println!("  screenshot            Select and decode QR code from screen");
+    println!();
+    println!("Screenshot options:");
+    println!("  --list                List all available monitors");
+    println!("  --screen <n>          Capture specific monitor (1-based index)");
+    println!();
+    println!("Other options:");
+    println!("  -h, --help            Print this help message");
+}
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if args.len() != 2 {
-        eprintln!("Usage: qrc <url_or_file_path>");
-        process::exit(1);
+
+    if args.len() < 2 || args[1] == "-h" || args[1] == "--help" {
+        print_help();
+        process::exit(0);
     }
 
-    let input = &args[1];
-    let img = load_image(input).unwrap_or_else(|e| {
-        eprintln!("Error loading image: {e}");
-        process::exit(1);
-    });
+    match args[1].as_str() {
+        "screenshot" => screenshot::run(&args[2..]),
+        input => {
+            let img = load_image(input).unwrap_or_else(|e| {
+                eprintln!("Error loading image: {e}");
+                process::exit(1);
+            });
 
-    let gray = img.to_luma8();
-    let mut prepared = rqrr::PreparedImage::prepare_from_greyscale(gray.width() as usize, gray.height() as usize, |x, y| gray.get_pixel(x as u32, y as u32).0[0]);
-
-    let grids = prepared.detect_grids();
-    if grids.is_empty() {
-        eprintln!("No QR code found in image");
-        process::exit(1);
-    }
-
-    for grid in grids {
-        match grid.decode() {
-            Ok((_meta, content)) => println!("{content}"),
-            Err(e) => eprintln!("Error decoding QR code: {e}"),
+            let results = decode::decode_qr(&img);
+            if results.is_empty() {
+                eprintln!("No QR code found in image");
+                process::exit(1);
+            }
+            for r in &results {
+                println!("{}", r.content);
+            }
         }
     }
 }
