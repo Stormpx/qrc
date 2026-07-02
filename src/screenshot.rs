@@ -332,13 +332,11 @@ pub fn run(args: &[String]) {
 
     let mon_x = monitor.x().unwrap_or(0) as f32;
     let mon_y = monitor.y().unwrap_or(0) as f32;
-    let mon_w = monitor.width().unwrap_or(w) as f32;
-    let mon_h = monitor.height().unwrap_or(h) as f32;
 
     let native_options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_position(egui::pos2(mon_x, mon_y))
-            .with_inner_size(egui::vec2(mon_w, mon_h))
+            .with_fullscreen(true)
             .with_decorations(false)
             .with_window_level(egui::WindowLevel::AlwaysOnTop),
         ..Default::default()
