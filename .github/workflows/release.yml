@@ -28,23 +28,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          declare -A archives=(
-            [qrc-x86_64-pc-windows-msvc]="qrc-windows-x86_64.zip"
-            [qrc-x86_64-unknown-linux-gnu]="qrc-linux-x86_64.tar.gz"
-            [qrc-aarch64-unknown-linux-gnu]="qrc-linux-aarch64.tar.gz"
-            [qrc-aarch64-apple-darwin]="qrc-macos-aarch64.tar.gz"
-            [qrc-x86_64-apple-darwin]="qrc-macos-x86_64.tar.gz"
-          )
-          for dir in artifacts/qrc-*/; do
-            target=$(basename "$dir")
-            archive="${archives[$target]}"
-            if [ -z "$archive" ]; then continue; fi
-            if [[ "$archive" == *.zip ]]; then
-              (cd "$dir" && zip "$OLDPWD/$archive" *)
-            else
-              (cd "$dir" && tar -czf "$OLDPWD/$archive" *)
-            fi
-          done
+          (cd artifacts/qrc-x86_64-pc-windows-msvc && zip "$OLDPWD/qrc-windows-x86_64.zip" *)
+          (cd artifacts/qrc-x86_64-unknown-linux-gnu && tar -czf "$OLDPWD/qrc-linux-x86_64.tar.gz" *)
+          (cd artifacts/qrc-aarch64-unknown-linux-gnu && tar -czf "$OLDPWD/qrc-linux-aarch64.tar.gz" *)
+          (cd artifacts/qrc-aarch64-apple-darwin && tar -czf "$OLDPWD/qrc-macos-aarch64.tar.gz" *)
+          (cd artifacts/qrc-x86_64-apple-darwin && tar -czf "$OLDPWD/qrc-macos-x86_64.tar.gz" *)
           gh release create "${{ inputs.tag }}" \
             --title "Release ${{ inputs.tag }}" \
             --generate-notes \
