@@ -49,6 +49,7 @@ jobs:
 
       - name: Install UPX
         if: runner.os != 'macOS'
+        shell: bash
         run: |
           if [ "$RUNNER_OS" = "Windows" ]; then
             choco install upx -y
@@ -60,6 +61,7 @@ jobs:
 
       - name: Compress binary
         if: runner.os != 'macOS'
+        shell: bash
         run: upx --best target/${{ matrix.target }}/release/${{ matrix.artifact }}
 
       - name: Upload artifact
