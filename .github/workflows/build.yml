@@ -47,6 +47,21 @@ jobs:
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
+      - name: Install UPX
+        if: runner.os != 'macOS'
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            choco install upx -y
+          elif [ "$(uname -m)" = "aarch64" ]; then
+            curl -sSL https://github.com/upx/upx/releases/download/v5.0.0/upx-5.0.0-arm64_linux.tar.xz | tar -xJ --strip-components=1 -C /usr/local/bin
+          else
+            curl -sSL https://github.com/upx/upx/releases/download/v5.0.0/upx-5.0.0-amd64_linux.tar.xz | tar -xJ --strip-components=1 -C /usr/local/bin
+          fi
+
+      - name: Compress binary
+        if: runner.os != 'macOS'
+        run: upx --best target/${{ matrix.target }}/release/${{ matrix.artifact }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
