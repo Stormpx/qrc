@@ -28,25 +28,23 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          cd artifacts
-          # Rename and package artifacts
-          for dir in qrc-*/; do
-            target="${dir%/}"
-            name="${target#qrc-}"
-            case "$name" in
-              x86_64-pc-windows-msvc) archive="qrc-windows-x86_64.zip" ;;
-              x86_64-unknown-linux-gnu) archive="qrc-linux-x86_64.tar.gz" ;;
-              aarch64-unknown-linux-gnu) archive="qrc-linux-aarch64.tar.gz" ;;
-              aarch64-apple-darwin) archive="qrc-macos-aarch64.tar.gz" ;;
-              x86_64-apple-darwin) archive="qrc-macos-x86_64.tar.gz" ;;
-            esac
+          declare -A archives=(
+            [qrc-x86_64-pc-windows-msvc]="qrc-windows-x86_64.zip"
+            [qrc-x86_64-unknown-linux-gnu]="qrc-linux-x86_64.tar.gz"
+            [qrc-aarch64-unknown-linux-gnu]="qrc-linux-aarch64.tar.gz"
+            [qrc-aarch64-apple-darwin]="qrc-macos-aarch64.tar.gz"
+            [qrc-x86_64-apple-darwin]="qrc-macos-x86_64.tar.gz"
+          )
+          for dir in artifacts/qrc-*/; do
+            target=$(basename "$dir")
+            archive="${archives[$target]}"
+            if [ -z "$archive" ]; then continue; fi
             if [[ "$archive" == *.zip ]]; then
-              cd "$dir" && zip "../../$archive" * && cd ..
+              (cd "$dir" && zip "$OLDPWD/$archive" *)
             else
-              cd "$dir" && tar -czf "../../$archive" * && cd ..
+              (cd "$dir" && tar -czf "$OLDPWD/$archive" *)
             fi
           done
-          cd ..
           gh release create "${{ inputs.tag }}" \
             --title "Release ${{ inputs.tag }}" \
             --generate-notes \
