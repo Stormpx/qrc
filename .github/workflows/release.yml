@@ -22,17 +22,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          merge-multiple: true
 
       - name: Package and create release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          (cd artifacts/qrc-x86_64-pc-windows-msvc && zip "$OLDPWD/qrc-windows-x86_64.zip" *)
-          (cd artifacts/qrc-x86_64-unknown-linux-gnu && tar -czf "$OLDPWD/qrc-linux-x86_64.tar.gz" *)
-          (cd artifacts/qrc-aarch64-unknown-linux-gnu && tar -czf "$OLDPWD/qrc-linux-aarch64.tar.gz" *)
-          (cd artifacts/qrc-aarch64-apple-darwin && tar -czf "$OLDPWD/qrc-macos-aarch64.tar.gz" *)
-          (cd artifacts/qrc-x86_64-apple-darwin && tar -czf "$OLDPWD/qrc-macos-x86_64.tar.gz" *)
+          ls -R artifacts
+          (cd artifacts/qrc-x86_64-pc-windows-msvc && zip "$OLDPWD/qrc-windows-x86_64.zip" qrc.exe)
+          (cd artifacts/qrc-x86_64-unknown-linux-gnu && tar -czf "$OLDPWD/qrc-linux-x86_64.tar.gz" qrc)
+          (cd artifacts/qrc-aarch64-unknown-linux-gnu && tar -czf "$OLDPWD/qrc-linux-aarch64.tar.gz" qrc)
+          (cd artifacts/qrc-aarch64-apple-darwin && tar -czf "$OLDPWD/qrc-macos-aarch64.tar.gz" qrc)
+          (cd artifacts/qrc-x86_64-apple-darwin && tar -czf "$OLDPWD/qrc-macos-x86_64.tar.gz" qrc)
           gh release create "${{ inputs.tag }}" \
             --title "Release ${{ inputs.tag }}" \
             --generate-notes \
